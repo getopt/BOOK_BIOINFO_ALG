@@ -1,0 +1,6 @@
+C:\cygwin64\home\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\bin\Debug\BioinfoAlgorithms.exe.config
+C:\cygwin64\home\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\bin\Debug\BioinfoAlgorithms.exe
+C:\cygwin64\home\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\bin\Debug\BioinfoAlgorithms.pdb
+C:\cygwin64\home\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\obj\Debug\BioinfoAlgorithms.csprojResolveAssemblyReference.cache
+C:\cygwin64\home\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\obj\Debug\BioinfoAlgorithms.exe
+C:\cygwin64\home\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\obj\Debug\BioinfoAlgorithms.pdb
