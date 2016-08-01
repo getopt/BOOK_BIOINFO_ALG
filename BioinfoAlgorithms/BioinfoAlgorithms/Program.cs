@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 
 namespace BioinfoAlgorithms
 {
+    public enum Alphabet
+    {
+        A,
+        C,
+        G,
+        T,
+    }
     class Program
     {
         static void Main(string[] args)
         {
-            Chapter01 chapter = new Chapter01();
-
-            int result = chapter.PatternToNumber("foo");
-
-            Console.WriteLine(result);
-            var name = Console.ReadLine();
-
+           var run = new RunChapter01("1L");
         }
     }
 }
