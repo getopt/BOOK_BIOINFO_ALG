@@ -15,9 +15,12 @@ namespace BioinfoAlgorithms
     }
     class Program
     {
+        public const int AlpabetLength = 4;
+
         static void Main(string[] args)
         {
-           var run = new RunChapter01("1L");
+           var run_1L = new RunChapter01("1L");
+           var run_1M = new RunChapter01("1M");
         }
     }
 }

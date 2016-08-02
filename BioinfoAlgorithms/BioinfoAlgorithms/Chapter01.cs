@@ -10,14 +10,16 @@ namespace BioinfoAlgorithms
     {
         public RunChapter01(string excercise)
         {
+            Chapter01 chapter = new Chapter01();
+
             switch (excercise)
             {
                 case "1L":
-                    Chapter01 chapter = new Chapter01();
-
-                    int result = chapter.PatternToNumber("TTT");
-
-                    Console.WriteLine(result);
+                    Console.WriteLine(chapter.PatternToNumber("TTT"));
+                    Console.ReadLine();
+                    break;
+                case "1M":
+                    Console.WriteLine(chapter.NumberToPattern(63, 2));
                     Console.ReadLine();
                     break;
                 default:
@@ -30,7 +32,8 @@ namespace BioinfoAlgorithms
     }
     class Chapter01
     {
-        public static Dictionary<string, int> Alphabet = new Dictionary<string, int>();
+        public Dictionary<string, int> Alphabet = new Dictionary<string, int>();
+        public Dictionary<int, string> ToAlphabet = new Dictionary<int, string>();
 
         public Chapter01()
         {
@@ -38,7 +41,37 @@ namespace BioinfoAlgorithms
             Alphabet.Add("C", (int)BioinfoAlgorithms.Alphabet.C);
             Alphabet.Add("G", (int)BioinfoAlgorithms.Alphabet.G);
             Alphabet.Add("T", (int)BioinfoAlgorithms.Alphabet.T);
+
+            ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.A, "A" );
+            ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.C, "C" );
+            ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.G, "G" );
+            ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.T, "T" );
         }
+
+        public string NumberToPattern(int index, int k)
+        {
+            if (k == 1)
+            {
+                if (index > Program.AlpabetLength - 1)
+                {
+                    Console.WriteLine("Quotient is bigger than 3... is k-mer length too small?");
+                    Console.ReadLine();
+                    Environment.Exit(1);
+                }
+                    
+                return ToAlphabet[index];
+            }
+
+            int prefixIndex = index/Program.AlpabetLength;
+            int r = index%Program.AlpabetLength;
+
+            string symbol = ToAlphabet[r];
+
+            string prefixPattern = NumberToPattern(prefixIndex, k - 1);
+
+            return prefixPattern + symbol;
+        }
+
         public int PatternToNumber(string pattern)
         {
             if (string.IsNullOrEmpty(pattern))
