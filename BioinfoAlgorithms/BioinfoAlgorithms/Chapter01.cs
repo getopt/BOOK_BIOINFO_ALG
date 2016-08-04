@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace BioinfoAlgorithms
 {
@@ -20,6 +21,10 @@ namespace BioinfoAlgorithms
                     break;
                 case "1M":
                     Console.WriteLine(chapter.NumberToPattern(63, 2));
+                    Console.ReadLine();
+                    break;
+                case "1N":
+                    Console.WriteLine(string.Join("\n", chapter.Neighbors("ACGT", 2)));
                     Console.ReadLine();
                     break;
                 default:
@@ -46,6 +51,60 @@ namespace BioinfoAlgorithms
             ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.C, "C" );
             ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.G, "G" );
             ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.T, "T" );
+        }
+
+        public List<string> Neighbors(string pattern, int d)
+        {
+            if (d == 0)
+            {
+                List<string> patterns = new List<string> {pattern};
+                return patterns;
+            }
+            if (pattern.Length == 1)
+            {
+                List<string> patterns = new List<string> {"A","C","G","T"};
+                return patterns;
+            }
+
+            List<string> neighborhood = new List<string>();
+            List<string> suffixNeighbors = Neighbors(pattern.Substring(1, pattern.Length - 1), d);
+            foreach (string text in suffixNeighbors)
+            {
+                if (HammingDistance(pattern.Substring(1, pattern.Length - 1), text) < d)
+                {
+                    var alphabet = EnumUtil.GetValues<Alphabet>();
+                    foreach (var nt in alphabet)
+                    {
+                        neighborhood.Add(nt.ToString() + text);
+                    }
+                }
+                else
+                {
+                    neighborhood.Add(pattern[0] + text);
+                }
+            }
+
+            return neighborhood;
+
+        }
+
+        public int HammingDistance(string pattern, string text)
+        {
+            if (pattern.Length != text.Length)
+            {
+                Console.WriteLine("ERROR: Hamming: Non equal lengths");
+                Console.ReadLine();
+                Environment.Exit(1);
+            }
+            int hamming = 0;
+            for (int i = 0; i <= pattern.Length - 1; i++)
+            {
+                if (pattern[i] != text[i])
+                {
+                    hamming++;
+                } 
+            }
+            return hamming;
         }
 
         public string NumberToPattern(int index, int k)

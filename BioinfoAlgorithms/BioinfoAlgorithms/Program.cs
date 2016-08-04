@@ -13,14 +13,22 @@ namespace BioinfoAlgorithms
         G,
         T,
     }
+
+    public static class EnumUtil {
+        // from http://stackoverflow.com/questions/972307/can-you-loop-through-all-enum-values
+        public static IEnumerable<T> GetValues<T>() {
+            return Enum.GetValues(typeof(T)).Cast<T>();
+        }
+    }    
     class Program
     {
         public const int AlpabetLength = 4;
 
         static void Main(string[] args)
         {
-           var run_1L = new RunChapter01("1L");
-           var run_1M = new RunChapter01("1M");
+            // var run_1L = new RunChapter01("1L");
+            // var run_1M = new RunChapter01("1M");
+            var run_1N = new RunChapter01("1N");
         }
     }
 }
