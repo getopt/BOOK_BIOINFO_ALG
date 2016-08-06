@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,10 +17,15 @@ namespace BioinfoAlgorithms
             switch (excercise)
             {
                 case "2A":
-                    string dna = "ATTGGTTTAGGTGTTTTCCCGAAGT";
+                    List<string> dnaStrings = new List<string>
+                    {
+                        "AAAAAAAAATTTAAAAAAA",
+                        "AAAAATATTTAAAAAAAAA",
+                        "AAAAATTTTAAAAAAAAAA",
+                    };
                     int k = 4;
-                    int d = 1;
-                    Console.WriteLine(chapter.MotifEnumerator(dna, k, d));
+                    int d = 0;
+                    Console.WriteLine(string.Join("\n", chapter.MotifEnumerator(dnaStrings, k, d)));
                     Console.ReadLine();
                     break;
                 default:
@@ -32,20 +38,38 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
-        public List<string> MotifEnumerator(string dna, int k, int d)
-        {
+        public List<string> MotifEnumerator(List<string> dnaStrings, int k, int d)
+        {   
             List<string> patterns = new List<string>();
-            var windows = StringSlidingWindows(dna, k);
-
-            foreach (int[] window in windows)
+            for(int i = 0; i < dnaStrings.Count; i++)
             {
-                var patternP = dna.Substring(window[0], k);
-                Console.WriteLine(patternP);
+                string dna = dnaStrings[i];
+                List<int[]> windows = StringSlidingWindows(dna, k);
 
-                Console.ReadLine();
+                for (int j = 0; j < dnaStrings.Count; j++)
+                {
+                    string dnaP = dnaStrings[j];
+                    List<int[]> windowsP = StringSlidingWindows(dnaP, k);
+
+                    if (j == i) { break; }
+
+                    foreach (int[] window in windows)
+                    {
+                        string pattern = dna.Substring(window[0], k);
+                        foreach (int[] windowP in windowsP)
+                        {
+                            string patternP = dna.Substring(windowP[0], k);
+                            if (HammingDistance(patternP, pattern) <= d)
+                            {
+                                patterns.Add(pattern);
+                            }
+                        }
+                    }
+                 }
             }
-            return patterns;
+            return patterns.Distinct().ToList();
         }
+
 
         public List<int[]> StringSlidingWindows(string foo, int k)
         {
