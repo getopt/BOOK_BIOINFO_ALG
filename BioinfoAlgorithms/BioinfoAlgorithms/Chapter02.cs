@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace BioinfoAlgorithms
 {
@@ -20,8 +22,8 @@ namespace BioinfoAlgorithms
                     List<string> dnaStrings = new List<string>
                     {
                         "AAAAAAAAATTTAAAAAAA",
-                        "AAAAATATTTAAAAAAAAA",
-                        "AAAAATTTTAAAAAAAAAA",
+                        "AAAAATATTTAAAAAA",
+                        "AAAAATTTTAAAAA",
                     };
                     int k = 4;
                     int d = 0;
@@ -40,34 +42,45 @@ namespace BioinfoAlgorithms
     {
         public List<string> MotifEnumerator(List<string> dnaStrings, int k, int d)
         {   
-            List<string> patterns = new List<string>();
-            for(int i = 0; i < dnaStrings.Count; i++)
+            var patternsDict = new MyListDictionary();
+
+            foreach (string dna in dnaStrings)
             {
-                string dna = dnaStrings[i];
                 List<int[]> windows = StringSlidingWindows(dna, k);
-
-                for (int j = 0; j < dnaStrings.Count; j++)
+                foreach (int[] window in windows)
                 {
-                    string dnaP = dnaStrings[j];
-                    List<int[]> windowsP = StringSlidingWindows(dnaP, k);
-
-                    if (j == i) { break; }
-
-                    foreach (int[] window in windows)
+                    string pattern = dna.Substring(window[0], k);
+                    List<string> neighbors = Neighbors(pattern, d);
+                    foreach (string neighbor in neighbors)
                     {
-                        string pattern = dna.Substring(window[0], k);
-                        foreach (int[] windowP in windowsP)
+                        foreach (string dnaP in dnaStrings)
                         {
-                            string patternP = dna.Substring(windowP[0], k);
-                            if (HammingDistance(patternP, pattern) <= d)
+                            List<int[]> windowsP = StringSlidingWindows(dnaP, k);
+                            foreach (int[] windowP in windowsP)
                             {
-                                patterns.Add(pattern);
+                                string patternP = dnaP.Substring(windowP[0], k);
+                                if (neighbor == patternP)
+                                {
+                                    patternsDict.Add(pattern,dnaP);
+                                }
                             }
-                        }
-                    }
-                 }
+                        } 
+                    } 
+                }
             }
-            return patterns.Distinct().ToList();
+
+            var patternsList = new List<string>();
+            var patterns = new List<string>(patternsDict.InternalDictionary.Keys);
+            foreach (string pattern in patterns)
+            {
+                if (patternsDict.InternalDictionary[pattern].Count == dnaStrings.Count)
+                {
+                   patternsList.Add(pattern); 
+                }
+                
+            }
+
+            return patternsList;
         }
 
 
