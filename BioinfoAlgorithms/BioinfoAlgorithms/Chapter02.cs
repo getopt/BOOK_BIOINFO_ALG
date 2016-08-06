@@ -39,11 +39,7 @@ namespace BioinfoAlgorithms
 
             foreach (int[] window in windows)
             {
-                var start = window[0];
-                var end = window[1];
-                Console.WriteLine(start.ToString() + ' ' + end.ToString());
-
-                var patternP = dna.Substring(start, end);
+                var patternP = dna.Substring(window[0], k);
                 Console.WriteLine(patternP);
 
                 Console.ReadLine();
