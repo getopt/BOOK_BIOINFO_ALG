@@ -26,9 +26,11 @@ namespace BioinfoAlgorithms
 
         static void Main(string[] args)
         {
-            // var run_1L = new RunChapter01("1L");
+            var run_2A = new RunChapter02("2A"); 
+
+            // var run_1N = new RunChapter01("1N");
             // var run_1M = new RunChapter01("1M");
-            var run_1N = new RunChapter01("1N");
+            // var run_1L = new RunChapter01("1L");
         }
     }
 }
