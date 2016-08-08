@@ -16,10 +16,12 @@ namespace BioinfoAlgorithms
         {
             Chapter02 chapter = new Chapter02();
 
+            List<string> dnaStrings;
+
             switch (excercise)
             {
                 case "2A":
-                    List<string> dnaStrings = new List<string>
+                    dnaStrings = new List<string>
                     {
                         "AAAAAAAAATTTAAAAAAA",
                         "AAAAATATTTAAAAAA",
@@ -28,6 +30,17 @@ namespace BioinfoAlgorithms
                     int k = 4;
                     int d = 0;
                     Console.WriteLine(string.Join("\n", chapter.MotifEnumerator(dnaStrings, k, d)));
+                    Console.ReadLine();
+                    break;
+                case "2H":
+                    dnaStrings = new List<string>
+                    {
+                        "AAAAAAAAATTTAAAAAAA",
+                        "AAAAATATTTAAAAAAGCG",
+                        "AAAAATTTTAAAAAGGATT",
+                    };
+                    string pattern = "AAAAG";
+                    Console.WriteLine(chapter.DistanceBetweenPatternAndStrings(pattern, dnaStrings).ToString());
                     Console.ReadLine();
                     break;
                 default:
@@ -40,6 +53,31 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        public int DistanceBetweenPatternAndStrings(string pattern, List<string> dnaStrings)
+        {
+            int k = pattern.Length;
+            int distance = 0;
+
+            foreach (string text in dnaStrings)
+            {
+                int hammingDistance = 1000000;
+                List<int[]> windows = StringSlidingWindows(text, k);
+                foreach (int[] window in windows)
+                {
+                    string patternP = text.Substring(window[0], k);
+                    int latestHammingDist = HammingDistance(pattern, patternP); 
+                    if (hammingDistance > latestHammingDist)
+                    {
+                        hammingDistance = latestHammingDist;
+                    }
+                }
+
+                distance += hammingDistance;
+            }
+
+            return distance;
+        }
+
         public List<string> MotifEnumerator(List<string> dnaStrings, int k, int d)
         {   
             var patternsDict = new MyListDictionary();

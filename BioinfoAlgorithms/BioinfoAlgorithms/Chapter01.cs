@@ -88,9 +88,9 @@ namespace BioinfoAlgorithms
 
         }
 
-        public int HammingDistance(string pattern, string text)
+        public int HammingDistance(string pattern, string patternP)
         {
-            if (pattern.Length != text.Length)
+            if (pattern.Length != patternP.Length)
             {
                 Console.WriteLine("ERROR: Hamming: Non equal lengths");
                 Console.ReadLine();
@@ -99,7 +99,7 @@ namespace BioinfoAlgorithms
             int hamming = 0;
             for (int i = 0; i <= pattern.Length - 1; i++)
             {
-                if (pattern[i] != text[i])
+                if (pattern[i] != patternP[i])
                 {
                     hamming++;
                 } 
