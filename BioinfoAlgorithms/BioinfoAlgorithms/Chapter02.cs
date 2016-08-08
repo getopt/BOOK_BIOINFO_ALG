@@ -17,7 +17,8 @@ namespace BioinfoAlgorithms
             Chapter02 chapter = new Chapter02();
 
             List<string> dnaStrings;
-
+            int k;
+            int d;
             switch (excercise)
             {
                 case "2A":
@@ -27,9 +28,20 @@ namespace BioinfoAlgorithms
                         "AAAAATATTTAAAAAA",
                         "AAAAATTTTAAAAA",
                     };
-                    int k = 4;
-                    int d = 0;
+                    k = 4;
+                    d = 0;
                     Console.WriteLine(string.Join("\n", chapter.MotifEnumerator(dnaStrings, k, d)));
+                    Console.ReadLine();
+                    break;
+                case "2B":
+                    dnaStrings = new List<string>
+                    {
+                        "TCTCTCTCTC",
+                        "TGTGTGTGTG",
+                        "TTTTTTTTTT",
+                    };
+                    k = 5;
+                    Console.WriteLine(chapter.MedianString(dnaStrings, k));
                     Console.ReadLine();
                     break;
                 case "2H":
@@ -53,6 +65,25 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        public string MedianString(List<string> dnaStrings, int k)
+        {
+            string median = "";
+
+            int distance = 1000000;
+            for (int i = 0; i < Math.Pow(EnumUtil.GetValues<BioinfoAlgorithms.Alphabet>().Count(), k) ; i++)
+            {
+                string pattern = NumberToPattern(i, k);
+                int currentDist = DistanceBetweenPatternAndStrings(pattern, dnaStrings);
+                if (distance > currentDist)
+                {
+                    distance = currentDist;
+                    median = pattern;
+                }
+
+            }
+
+            return median;
+        }
         public int DistanceBetweenPatternAndStrings(string pattern, List<string> dnaStrings)
         {
             int k = pattern.Length;
