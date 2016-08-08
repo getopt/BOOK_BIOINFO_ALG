@@ -47,6 +47,13 @@ namespace BioinfoAlgorithms
         }
     }
 
+    public class ProfileMatrixEntry
+    {
+        public int BaseN { get; set; }
+        public int Pos { get; set; }
+        public double Prob { get; set; }
+    }
+
     class Program
     {
         public const int AlpabetLength = 4;
@@ -54,7 +61,8 @@ namespace BioinfoAlgorithms
         static void Main(string[] args)
         {
             // var run_2H = new RunChapter02("2H"); 
-            var run_2B = new RunChapter02("2B");
+            // var run_2B = new RunChapter02("2B");
+            var run_2C = new RunChapter02("2C");
             // var run_2A = new RunChapter02("2A"); 
             // var run_1N = new RunChapter01("1N");
             // var run_1M = new RunChapter01("1M");

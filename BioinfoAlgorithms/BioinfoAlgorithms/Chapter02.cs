@@ -44,6 +44,30 @@ namespace BioinfoAlgorithms
                     Console.WriteLine(chapter.MedianString(dnaStrings, k));
                     Console.ReadLine();
                     break;
+                case "2C":
+                    k = 12;
+                    List<ProfileMatrixEntry> profileMatrix = new List<ProfileMatrixEntry>();
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.A, Pos = 0, Prob = 0.2});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.C, Pos = 0, Prob = 0.1});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.G, Pos = 0, Prob = 0.0});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.T, Pos = 0, Prob = 0.7});
+
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.A, Pos = 1, Prob = 0.2});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.C, Pos = 1, Prob = 0.6});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.G, Pos = 1, Prob = 0.0});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.T, Pos = 1, Prob = 0.2});
+
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.A, Pos = 2, Prob = 0.0});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.C, Pos = 2, Prob = 0.0});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.G, Pos = 2, Prob = 1.0});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.T, Pos = 2, Prob = 0.0});
+
+                    int [] entry = new int[2];
+                    entry[0] = 3;
+                    entry[1] = 0;
+                    Console.WriteLine(chapter.MatrixEntry(profileMatrix, entry));
+                    Console.ReadLine();
+                    break;
                 case "2H":
                     dnaStrings = new List<string>
                     {
@@ -65,6 +89,16 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        public double MatrixEntry( List<ProfileMatrixEntry> profileMatrix, int[] coords)
+        {
+            IEnumerable<double> entries = from a in profileMatrix
+                where a.BaseN == coords[0]
+                where a.Pos == coords[1]
+                select a.Prob;
+
+            return entries.First();
+        }
+
         public string MedianString(List<string> dnaStrings, int k)
         {
             string median = "";
