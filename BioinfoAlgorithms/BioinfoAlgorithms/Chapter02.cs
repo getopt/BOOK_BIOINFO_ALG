@@ -45,7 +45,6 @@ namespace BioinfoAlgorithms
                     Console.ReadLine();
                     break;
                 case "2C":
-                    k = 12;
                     List<ProfileMatrixEntry> profileMatrix = new List<ProfileMatrixEntry>();
                     profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.A, Pos = 0, Prob = 0.2});
                     profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.C, Pos = 0, Prob = 0.1});
@@ -62,12 +61,19 @@ namespace BioinfoAlgorithms
                     profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.G, Pos = 2, Prob = 1.0});
                     profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.T, Pos = 2, Prob = 0.0});
 
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.A, Pos = 3, Prob = 0.0});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.C, Pos = 3, Prob = 0.0});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.G, Pos = 3, Prob = 1.0});
+                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.T, Pos = 3, Prob = 0.0});
+
+                    k = 4;
+
                     int [] entry = new int[2];
                     entry[0] = 3;
                     entry[1] = 0;
                     // Console.WriteLine(chapter.MatrixEntry(profileMatrix, entry));
-                    string dna = "AAATTTTCGAAA";
-                    Console.WriteLine(chapter.KmerProbabilityFromPm(profileMatrix, dna));
+                    string dna = "AAATTTTCGGAA";
+                    Console.WriteLine(chapter.MostProbableKmer(dna, k, profileMatrix));
                     Console.ReadLine();
                     break;
                 case "2H":
@@ -91,7 +97,7 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
-        public string ProfileMostProbableKmer( string text, int k, List<ProfileMatrixEntry> profileMatrix )
+        public string MostProbableKmer( string text, int k, List<ProfileMatrixEntry> profileMatrix )
         {
             string pattern = "";
             double prob = 0.0;
@@ -101,7 +107,8 @@ namespace BioinfoAlgorithms
             foreach (int[] window in windows)
             {
                 string currentPattern = text.Substring(window[0], k);
-                double currentProb = KmerProbabilityFromPm(profileMatrix, pattern);
+                double currentProb = KmerProbabilityFromPm(profileMatrix, currentPattern);
+                // Console.WriteLine(currentProb.ToString());
                 if (currentProb >= prob)
                 {
                     pattern = currentPattern;
@@ -114,13 +121,13 @@ namespace BioinfoAlgorithms
 
         public double KmerProbabilityFromPm(List<ProfileMatrixEntry> pm, string pattern)
         {
-            double prob = 1;
-            for (int i = 0; i < pm.Count; i++)
+            double prob = 1.0;
+            for (int i = 0; i < pattern.Length; i++)
             {
                 var i1 = i;
                 var i2 = i;
                 IEnumerable<double> currentProbs = from a in pm
-                    where a.BaseN == pattern[i1]
+                    where a.BaseN == Alphabet[pattern[i1].ToString()]
                     where a.Pos == i2
                     select a.Prob;
 
