@@ -37,20 +37,27 @@ namespace BioinfoAlgorithms
     }
     class Chapter01
     {
-        public Dictionary<string, int> Alphabet = new Dictionary<string, int>();
-        public Dictionary<int, string> ToAlphabet = new Dictionary<int, string>();
+        public Dictionary<string, int> AlphabetDict = new Dictionary<string, int>();
+        public Dictionary<int, string> ToAlphabetDict = new Dictionary<int, string>();
+        public List<string> Alphabet = new List<string>();
 
         public Chapter01()
         {
-            Alphabet.Add("A", (int)BioinfoAlgorithms.Alphabet.A);
-            Alphabet.Add("C", (int)BioinfoAlgorithms.Alphabet.C);
-            Alphabet.Add("G", (int)BioinfoAlgorithms.Alphabet.G);
-            Alphabet.Add("T", (int)BioinfoAlgorithms.Alphabet.T);
+            AlphabetDict.Add("A", (int)BioinfoAlgorithms.AlphabetEnum.A);
+            AlphabetDict.Add("C", (int)BioinfoAlgorithms.AlphabetEnum.C);
+            AlphabetDict.Add("G", (int)BioinfoAlgorithms.AlphabetEnum.G);
+            AlphabetDict.Add("T", (int)BioinfoAlgorithms.AlphabetEnum.T);
 
-            ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.A, "A" );
-            ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.C, "C" );
-            ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.G, "G" );
-            ToAlphabet.Add((int)BioinfoAlgorithms.Alphabet.T, "T" );
+            ToAlphabetDict.Add((int)BioinfoAlgorithms.AlphabetEnum.A, "A" );
+            ToAlphabetDict.Add((int)BioinfoAlgorithms.AlphabetEnum.C, "C" );
+            ToAlphabetDict.Add((int)BioinfoAlgorithms.AlphabetEnum.G, "G" );
+            ToAlphabetDict.Add((int)BioinfoAlgorithms.AlphabetEnum.T, "T" );
+
+            Alphabet.Add("A");
+            Alphabet.Add("C");
+            Alphabet.Add("G");
+            Alphabet.Add("T");
+
         }
 
         public List<string> Neighbors(string pattern, int d)
@@ -72,7 +79,7 @@ namespace BioinfoAlgorithms
             {
                 if (HammingDistance(pattern.Substring(1, pattern.Length - 1), text) < d)
                 {
-                    var alphabet = EnumUtil.GetValues<Alphabet>();
+                    var alphabet = EnumUtil.GetValues<AlphabetEnum>();
                     foreach (var nt in alphabet)
                     {
                         neighborhood.Add(nt.ToString() + text);
@@ -118,13 +125,13 @@ namespace BioinfoAlgorithms
                     Environment.Exit(1);
                 }
                     
-                return ToAlphabet[index];
+                return ToAlphabetDict[index];
             }
 
             int prefixIndex = index/Program.AlpabetLength;
             int r = index%Program.AlpabetLength;
 
-            string symbol = ToAlphabet[r];
+            string symbol = ToAlphabetDict[r];
 
             string prefixPattern = NumberToPattern(prefixIndex, k - 1);
 
@@ -141,7 +148,7 @@ namespace BioinfoAlgorithms
             string symbol = LastSymbol(pattern);
             string prefix = Prefix(pattern);
 
-            return 4 * PatternToNumber(prefix) + Alphabet[symbol];
+            return 4 * PatternToNumber(prefix) + AlphabetDict[symbol];
         }
 
         public string LastSymbol(string pattern)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BioinfoAlgorithms
 {
-    public enum Alphabet
+    public enum AlphabetEnum
     {
         A,
         C,
@@ -49,7 +49,7 @@ namespace BioinfoAlgorithms
 
     public class ProfileMatrixEntry
     {
-        public int BaseN { get; set; }
+        public string Base { get; set; }
         public int Pos { get; set; }
         public double Prob { get; set; }
     }

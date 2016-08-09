@@ -10,7 +10,7 @@ using System.Xml.Schema;
 
 namespace BioinfoAlgorithms
 {
-    class RunChapter02
+    class RunChapter02:Chapter02
     {
         public RunChapter02(string excercise)
         {
@@ -45,36 +45,42 @@ namespace BioinfoAlgorithms
                     Console.ReadLine();
                     break;
                 case "2C":
-                    List<ProfileMatrixEntry> profileMatrix = new List<ProfileMatrixEntry>();
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.A, Pos = 0, Prob = 0.2});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.C, Pos = 0, Prob = 0.1});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.G, Pos = 0, Prob = 0.0});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.T, Pos = 0, Prob = 0.7});
+                    // List<ProfileMatrixEntry> profileMatrix = new List<ProfileMatrixEntry>();
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[0], Pos = 0, Prob = 0.2});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[1], Pos = 0, Prob = 0.1});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[2], Pos = 0, Prob = 0.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[3], Pos = 0, Prob = 0.7});
 
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.A, Pos = 1, Prob = 0.2});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.C, Pos = 1, Prob = 0.6});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.G, Pos = 1, Prob = 0.0});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.T, Pos = 1, Prob = 0.2});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[0], Pos = 1, Prob = 0.2});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[1], Pos = 1, Prob = 0.6});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[2], Pos = 1, Prob = 0.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[3], Pos = 1, Prob = 0.2});
 
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.A, Pos = 2, Prob = 0.0});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.C, Pos = 2, Prob = 0.0});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.G, Pos = 2, Prob = 1.0});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.T, Pos = 2, Prob = 0.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[0], Pos = 2, Prob = 0.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[1], Pos = 2, Prob = 0.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[2], Pos = 2, Prob = 1.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[3], Pos = 2, Prob = 0.0});
 
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.A, Pos = 3, Prob = 0.0});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.C, Pos = 3, Prob = 0.0});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.G, Pos = 3, Prob = 1.0});
-                    profileMatrix.Add(new ProfileMatrixEntry {BaseN = (int)BioinfoAlgorithms.Alphabet.T, Pos = 3, Prob = 0.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[0], Pos = 3, Prob = 0.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[1], Pos = 3, Prob = 0.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[2], Pos = 3, Prob = 1.0});
+                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[3], Pos = 3, Prob = 0.0});
 
-                    k = 4;
+                    // k = 4;
 
-                    int [] entry = new int[2];
-                    entry[0] = 3;
-                    entry[1] = 0;
-                    // Console.WriteLine(chapter.MatrixEntry(profileMatrix, entry));
-                    string dna = "AAATTTTCGGAA";
-                    Console.WriteLine(chapter.MostProbableKmer(dna, k, profileMatrix));
-                    Console.ReadLine();
+                    // int [] entry = new int[2];
+                    // entry[0] = 3;
+                    // entry[1] = 0;
+                    // string dna = "AAATTTTCGGAA";
+                    // Console.WriteLine(chapter.MostProbableKmer(dna, k, profileMatrix));
+                    // Console.ReadLine();
+
+                    List<string> dnas = new List<string> {"ATGC",
+                                                          "TACG",
+                                                          "GGGG",
+                                                          "CAAA" };
+                    var pm = chapter.DnaToProfileMatrix(dnas);
+                    chapter.PrintPm(pm);
                     break;
                 case "2H":
                     dnaStrings = new List<string>
@@ -97,6 +103,62 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        public List<ProfileMatrixEntry> DnaToProfileMatrix(List<string> dnaStrings)
+        {
+            List<ProfileMatrixEntry> pm = new List<ProfileMatrixEntry>();
+
+            for(int i = 0; i < dnaStrings.First().Length; i++)
+            {
+                List<string> sequence = new List<string>();
+
+                Dictionary<string, int> ntPosition = new Dictionary<string, int>();
+                foreach (string nt in Alphabet) {
+                    ntPosition[nt] = 0;
+                }
+
+                for (int j = 0; j < dnaStrings.Count; j++)
+                {
+                    if (dnaStrings[j].Length != dnaStrings.First().Length)
+                    {
+                        Console.WriteLine("DNA strings are of unequal length!");
+                        Environment.Exit(1); 
+                    }
+                
+                    string currentDna = dnaStrings[j];
+                    string currentNt = currentDna[i].ToString();
+                    ntPosition[currentNt] += 1;
+                }
+
+                foreach (string nt in Alphabet)
+                {
+                    double prob = ntPosition[nt]/(double)dnaStrings.Count;
+                    pm.Add(new ProfileMatrixEntry {Base = nt, Pos = i, Prob = prob});
+                }
+            }
+
+            return pm;
+        }
+
+        public void PrintPm(List<ProfileMatrixEntry> profileMatrix)
+        {
+            int PmLength = profileMatrix.Count/Alphabet.Count;
+            foreach (string nt in Alphabet)
+            {
+                Console.Write(nt);
+                for (int i = 0; i < PmLength; i++)
+                {
+                    IEnumerable<double> entries = from a in profileMatrix
+                                                  where a.Base == nt
+                                                  where a.Pos == i
+                                                  select a.Prob;
+
+                    Console.Write("\t" + entries.First().ToString());
+                }
+                Console.WriteLine();
+            }
+            Console.ReadLine();
+        }
+
         public string MostProbableKmer( string text, int k, List<ProfileMatrixEntry> profileMatrix )
         {
             string pattern = "";
@@ -127,7 +189,7 @@ namespace BioinfoAlgorithms
                 var i1 = i;
                 var i2 = i;
                 IEnumerable<double> currentProbs = from a in pm
-                    where a.BaseN == Alphabet[pattern[i1].ToString()]
+                    where a.Base == pattern[i1].ToString()
                     where a.Pos == i2
                     select a.Prob;
 
@@ -137,22 +199,12 @@ namespace BioinfoAlgorithms
             return prob;
         }
 
-        public double MatrixEntry( List<ProfileMatrixEntry> profileMatrix, int[] coords)
-        {
-            IEnumerable<double> entries = from a in profileMatrix
-                where a.BaseN == coords[0]
-                where a.Pos == coords[1]
-                select a.Prob;
-
-            return entries.First();
-        }
-
         public string MedianString(List<string> dnaStrings, int k)
         {
             string median = "";
 
             int distance = 1000000;
-            for (int i = 0; i < Math.Pow(EnumUtil.GetValues<BioinfoAlgorithms.Alphabet>().Count(), k) ; i++)
+            for (int i = 0; i < Math.Pow(EnumUtil.GetValues<BioinfoAlgorithms.AlphabetEnum>().Count(), k) ; i++)
             {
                 string pattern = NumberToPattern(i, k);
                 int currentDist = DistanceBetweenPatternAndStrings(pattern, dnaStrings);
