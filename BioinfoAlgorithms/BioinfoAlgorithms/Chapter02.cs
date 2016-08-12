@@ -17,6 +17,7 @@ namespace BioinfoAlgorithms
             Chapter02 chapter = new Chapter02();
 
             List<string> dnaStrings;
+            List<ProfileMatrixEntry> pm;
             int k;
             int d;
             switch (excercise)
@@ -45,42 +46,24 @@ namespace BioinfoAlgorithms
                     Console.ReadLine();
                     break;
                 case "2C":
-                    // List<ProfileMatrixEntry> profileMatrix = new List<ProfileMatrixEntry>();
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[0], Pos = 0, Prob = 0.2});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[1], Pos = 0, Prob = 0.1});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[2], Pos = 0, Prob = 0.0});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[3], Pos = 0, Prob = 0.7});
-
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[0], Pos = 1, Prob = 0.2});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[1], Pos = 1, Prob = 0.6});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[2], Pos = 1, Prob = 0.0});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[3], Pos = 1, Prob = 0.2});
-
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[0], Pos = 2, Prob = 0.0});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[1], Pos = 2, Prob = 0.0});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[2], Pos = 2, Prob = 1.0});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[3], Pos = 2, Prob = 0.0});
-
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[0], Pos = 3, Prob = 0.0});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[1], Pos = 3, Prob = 0.0});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[2], Pos = 3, Prob = 1.0});
-                    // profileMatrix.Add(new ProfileMatrixEntry {Base = Alphabet[3], Pos = 3, Prob = 0.0});
-
-                    // k = 4;
-
-                    // int [] entry = new int[2];
-                    // entry[0] = 3;
-                    // entry[1] = 0;
-                    // string dna = "AAATTTTCGGAA";
-                    // Console.WriteLine(chapter.MostProbableKmer(dna, k, profileMatrix));
-                    // Console.ReadLine();
-
-                    List<string> dnas = new List<string> {"ATGC",
-                                                          "TACG",
-                                                          "GGGG",
-                                                          "CAAA" };
-                    var pm = chapter.DnaToProfileMatrix(dnas);
+                    dnaStrings = new List<string> {"ATGC",
+                                              "TACG",
+                                              "GGGG",
+                                              "CAAA" };
+                    pm = chapter.DnaToProfileMatrix(dnaStrings);
+                    string dna = "AAATGCTCGGAA";
+                    k = 4;
+                    Console.WriteLine(chapter.MostProbableKmer(dna, k, pm));
                     chapter.PrintPm(pm);
+                    break;
+                case "2D":
+                    dnaStrings = new List<string> {"ATGC",
+                                              "TACG",
+                                              "GGGG",
+                                              "CAAA" };
+                    pm = chapter.DnaToProfileMatrix(dnaStrings);
+                    Console.WriteLine(chapter.ScoreProfileMatrix(pm).ToString());
+                    Console.ReadLine();
                     break;
                 case "2H":
                     dnaStrings = new List<string>
@@ -103,6 +86,47 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+
+        /// <summary>
+        /// Given profile matrix 'pm' return 'scoreFrac', which is the fractional 
+        /// score of the profile matrix equal to the sum of probabilies of lowercase
+        /// (i.e. unpopular) nucleotides. Note that if two nucleotides have equal
+        /// probability in pm, then the popular nucleotide is chosen at random
+        /// between the two.
+        /// </summary>
+        public double ScoreProfileMatrix(List<ProfileMatrixEntry> pm)
+        {
+            double scoreFrac = 0.0;
+
+            Dictionary<string, double> ntPosition = new Dictionary<string, double>();
+            foreach (string nt in Alphabet) 
+                ntPosition[nt] = 0.0;
+
+            for (int i = 0; i < pm.Count/Alphabet.Count; i++)
+            {
+                foreach(string nt in Alphabet)
+                {
+                    IEnumerable<double> entries = from a in pm
+                                                  where a.Base == nt
+                                                  where a.Pos == i
+                                                  select a.Prob;
+
+                    ntPosition[nt] = entries.First();
+                }
+
+                double maxProb = 0.0;
+                foreach (string nt in ntPosition.Keys)
+                    if (maxProb < ntPosition[nt])
+                        maxProb = ntPosition[nt];
+                double lowerCaseLettersProb = 1.0 - maxProb;
+                scoreFrac += lowerCaseLettersProb;
+            }
+            return scoreFrac;
+        } 
+           
+        /// <summary>
+        /// Returns a profile matrix given a list of dna sequences 'dnaStrings'
+        /// </summary>
         public List<ProfileMatrixEntry> DnaToProfileMatrix(List<string> dnaStrings)
         {
             List<ProfileMatrixEntry> pm = new List<ProfileMatrixEntry>();
@@ -138,7 +162,10 @@ namespace BioinfoAlgorithms
 
             return pm;
         }
-
+        
+        /// <summary>
+        /// Print profile matrix 'profileMatrix' to console
+        /// </summary>
         public void PrintPm(List<ProfileMatrixEntry> profileMatrix)
         {
             int PmLength = profileMatrix.Count/Alphabet.Count;
@@ -158,7 +185,11 @@ namespace BioinfoAlgorithms
             }
             Console.ReadLine();
         }
-
+        
+        /// <summary>
+        /// Given a sequence 'text' and a profile matrix 'profileMatrix', return a
+        /// k-mer from text that is most probable given the 'profileMatrix'  
+        /// </summary>
         public string MostProbableKmer( string text, int k, List<ProfileMatrixEntry> profileMatrix )
         {
             string pattern = "";
@@ -180,7 +211,10 @@ namespace BioinfoAlgorithms
 
             return pattern;
         }
-
+        
+        /// <summary>
+        /// Return the probabiliy of a sequence 'pattern' given profile matrix 'pm'
+        /// </summary>
         public double KmerProbabilityFromPm(List<ProfileMatrixEntry> pm, string pattern)
         {
             double prob = 1.0;
@@ -198,7 +232,11 @@ namespace BioinfoAlgorithms
 
             return prob;
         }
-
+        
+        /// <summary>
+        /// Find a k-mer pattern that minimazies d(pattern, dnaString)
+        /// over all k-mers in dnaStrings 
+        /// </summary>
         public string MedianString(List<string> dnaStrings, int k)
         {
             string median = "";
@@ -218,6 +256,10 @@ namespace BioinfoAlgorithms
 
             return median;
         }
+
+        /// <summary>
+        /// The sum of distances between pattern and each string in dnaStrings
+        /// </summary>
         public int DistanceBetweenPatternAndStrings(string pattern, List<string> dnaStrings)
         {
             int k = pattern.Length;
@@ -242,7 +284,12 @@ namespace BioinfoAlgorithms
 
             return distance;
         }
-
+        
+        /// <summary>
+        /// Brute force approach to solving Implanted Motif Problem.
+        /// It's based on observation that any (k,d)-motif must be at most d mismatches
+        /// apart from some k-mer appearing in one of the strings of dna.
+        /// </summary>
         public List<string> MotifEnumerator(List<string> dnaStrings, int k, int d)
         {   
             var patternsDict = new MyListDictionary();
@@ -282,15 +329,16 @@ namespace BioinfoAlgorithms
                 }
                 
             }
-
             return patternsList;
         }
 
-
-        public List<int[]> StringSlidingWindows(string foo, int k)
+        /// <summary>
+        /// Generate list of overlapping k-wide windows covering sequence  
+        /// </summary>
+        public List<int[]> StringSlidingWindows(string sequence, int k)
         {
             List<int[]> windows = new List<int[]>();
-            for (int i = 0; i <= foo.Length - k; i++)
+            for (int i = 0; i <= sequence.Length - k; i++)
             {
                 int[] coords = new int[2];
                 coords[0] = i;

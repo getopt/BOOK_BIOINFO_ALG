@@ -59,7 +59,11 @@ namespace BioinfoAlgorithms
             Alphabet.Add("T");
 
         }
-
+        
+        /// <summary>
+        /// Generate list of strings at most d-mismatches
+        /// apart from pattern.
+        /// </summary>
         public List<string> Neighbors(string pattern, int d)
         {
             if (d == 0)
