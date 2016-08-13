@@ -58,13 +58,14 @@ namespace BioinfoAlgorithms
                     chapter.PrintPm(pm);
                     break;
                 case "2D":
-                    k = 2;
-                    dnaStrings = new List<string> {"ATGC",
-                                              "TACG",
-                                              "GGGG",
-                                              "CAAA" };
+                    dnaStrings = new List<string> {"TTACCTTAACTTTT",
+                                                   "GATGTCTGTCACCT",
+                                                   "ACGGCGTTAGACCT",
+                                                   "CCCTAACGAGACCT",
+                                                   "CGTCAGAGGTACCT"};
+                    k = 4;
                     List<string> bestProfile = GreedyMotifSearch(dnaStrings,k,dnaStrings.Count);
-                    chapter.PrintProfile(bestProfile);
+                    PrintProfile(bestProfile, "Best profile:");
                     Console.ReadLine();
                     break;
                 case "2H":
@@ -88,56 +89,67 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        /// <summary>
+        /// Tries to find most probable profile matrix by starting from any of the k-mers 
+        /// in first dnaString from dnaStrings.
+        /// </summary>
         public List<string> GreedyMotifSearch(List<string> dnaStrings, int k, int t)
         {
             // get pm from first k-mers in each dnaString
-            List<string> bestMotifs = new List<string>();
+            List<string> bestProfile = new List<string>();
             foreach (string dnaString in dnaStrings)
             {
                 string motif = dnaString.Substring(0, k);
-                bestMotifs.Add(motif);
+                bestProfile.Add(motif);
             }
-            List<ProfileMatrixEntry> bestPm = DnaToProfileMatrix(bestMotifs);
+            PrintProfile(bestProfile, "First profile:");
 
             // loop through every k-mer of the first dnaString
             List<int[]> windows = StringSlidingWindows(dnaStrings.First(), k);
+
             foreach (int[] window in windows)
             {
                 string substring = dnaStrings.First().Substring(window[0], k);
 
                 List<string> profile = new List<string> {substring};
-                List<ProfileMatrixEntry> pm = DnaToProfileMatrix(profile);
 
                 for (int i = 1; i < t; i++)
                 {
-                    string motifP = MostProbableKmer(dnaStrings[i], k, pm);
-                    profile.Add(motifP); 
+                    string motifP = MostProbableKmer(dnaStrings[i], k, DnaToProfileMatrix(profile));
+                    profile.Add(motifP);
                 }
+                PrintProfile(profile);
 
-                pm = DnaToProfileMatrix(profile);
-                if(ScoreProfileMatrix(pm) < ScoreProfileMatrix(bestPm))
+                if(ScoreProfileMatrix(DnaToProfileMatrix(profile)) < ScoreProfileMatrix(DnaToProfileMatrix(bestProfile)))
                 {
-                    bestMotifs = profile;
+                    bestProfile = profile;
                 }
             }
-            return bestMotifs;
+            return bestProfile;
         }
 
+        /// <summary>
+        /// Print strings in profile to console with a message
+        /// </summary>
+        public void PrintProfile(List<string> profile, string message)
+        {
+            Console.WriteLine(message);
+            foreach (string text in profile)
+                Console.WriteLine(text);
+            Console.WriteLine("Score: " + ScoreProfileMatrix(DnaToProfileMatrix(profile)).ToString());
+            Console.WriteLine();
+        }
+        /// <summary>
+        /// Print strings in profile to console 
+        /// </summary>
         public void PrintProfile(List<string> profile)
         {
             foreach (string text in profile)
-            {
                 Console.WriteLine(text);
-            }
+            Console.WriteLine("Score: " + ScoreProfileMatrix(DnaToProfileMatrix(profile)).ToString());
+            Console.WriteLine();
         }
-
-        public double ScoreMotifs(List<string> dnaStrings)
-        {
-            List<ProfileMatrixEntry> pm = DnaToProfileMatrix(dnaStrings);
-            double score = ScoreProfileMatrix(pm);
-            return score;
-        }
-
+        
         /// <summary>
         /// Given profile matrix 'pm' return 'scoreFrac', which is the fractional 
         /// score of the profile matrix equal to the sum of probabilies of lowercase
@@ -243,7 +255,7 @@ namespace BioinfoAlgorithms
         /// </summary>
         public string MostProbableKmer( string text, int k, List<ProfileMatrixEntry> profileMatrix )
         {
-            string pattern = "";
+            string pattern = text.Substring(0,k);
             double prob = 0.0;
 
             List<int[]> windows = StringSlidingWindows(text, k);
@@ -253,7 +265,7 @@ namespace BioinfoAlgorithms
                 string currentPattern = text.Substring(window[0], k);
                 double currentProb = KmerProbabilityFromPm(profileMatrix, currentPattern);
                 // Console.WriteLine(currentProb.ToString());
-                if (currentProb >= prob)
+                if (currentProb > prob)
                 {
                     pattern = currentPattern;
                     prob = currentProb;
