@@ -96,36 +96,36 @@ namespace BioinfoAlgorithms
         public List<string> GreedyMotifSearch(List<string> dnaStrings, int k, int t)
         {
             // get pm from first k-mers in each dnaString
-            List<string> bestProfile = new List<string>();
+            List<string> bestMotifs = new List<string>();
             foreach (string dnaString in dnaStrings)
             {
                 string motif = dnaString.Substring(0, k);
-                bestProfile.Add(motif);
+                bestMotifs.Add(motif);
             }
-            PrintProfile(bestProfile, "First profile:");
+            PrintProfile(bestMotifs, "First profile:");
 
             // loop through every k-mer of the first dnaString
             List<int[]> windows = StringSlidingWindows(dnaStrings.First(), k);
 
             foreach (int[] window in windows)
             {
-                string substring = dnaStrings.First().Substring(window[0], k);
+                string motif = dnaStrings.First().Substring(window[0], k);
 
-                List<string> profile = new List<string> {substring};
+                List<string> motifs = new List<string> {motif};
 
                 for (int i = 1; i < t; i++)
                 {
-                    string motifP = MostProbableKmer(dnaStrings[i], k, DnaToProfileMatrix(profile));
-                    profile.Add(motifP);
+                    string motifCurrent = MostProbableKmer(dnaStrings[i], k, DnaToProfileMatrix(motifs));
+                    motifs.Add(motifCurrent);
                 }
-                PrintProfile(profile);
+                PrintProfile(motifs);
 
-                if(ScoreProfileMatrix(DnaToProfileMatrix(profile)) < ScoreProfileMatrix(DnaToProfileMatrix(bestProfile)))
+                if(ScoreProfileMatrix(DnaToProfileMatrix(motifs)) < ScoreProfileMatrix(DnaToProfileMatrix(bestMotifs)))
                 {
-                    bestProfile = profile;
+                    bestMotifs = motifs;
                 }
             }
-            return bestProfile;
+            return bestMotifs;
         }
 
         /// <summary>
