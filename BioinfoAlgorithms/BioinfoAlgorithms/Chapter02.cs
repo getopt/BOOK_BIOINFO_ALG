@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Globalization;
 using System.Linq;
@@ -57,12 +58,13 @@ namespace BioinfoAlgorithms
                     chapter.PrintPm(pm);
                     break;
                 case "2D":
+                    k = 2;
                     dnaStrings = new List<string> {"ATGC",
                                               "TACG",
                                               "GGGG",
                                               "CAAA" };
-                    pm = chapter.DnaToProfileMatrix(dnaStrings);
-                    Console.WriteLine(chapter.ScoreProfileMatrix(pm).ToString());
+                    List<string> bestProfile = GreedyMotifSearch(dnaStrings,k,dnaStrings.Count);
+                    chapter.PrintProfile(bestProfile);
                     Console.ReadLine();
                     break;
                 case "2H":
@@ -86,6 +88,55 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        public List<string> GreedyMotifSearch(List<string> dnaStrings, int k, int t)
+        {
+            // get pm from first k-mers in each dnaString
+            List<string> bestMotifs = new List<string>();
+            foreach (string dnaString in dnaStrings)
+            {
+                string motif = dnaString.Substring(0, k);
+                bestMotifs.Add(motif);
+            }
+            List<ProfileMatrixEntry> bestPm = DnaToProfileMatrix(bestMotifs);
+
+            // loop through every k-mer of the first dnaString
+            List<int[]> windows = StringSlidingWindows(dnaStrings.First(), k);
+            foreach (int[] window in windows)
+            {
+                string substring = dnaStrings.First().Substring(window[0], k);
+
+                List<string> profile = new List<string> {substring};
+                List<ProfileMatrixEntry> pm = DnaToProfileMatrix(profile);
+
+                for (int i = 1; i < t; i++)
+                {
+                    string motifP = MostProbableKmer(dnaStrings[i], k, pm);
+                    profile.Add(motifP); 
+                }
+
+                pm = DnaToProfileMatrix(profile);
+                if(ScoreProfileMatrix(pm) < ScoreProfileMatrix(bestPm))
+                {
+                    bestMotifs = profile;
+                }
+            }
+            return bestMotifs;
+        }
+
+        public void PrintProfile(List<string> profile)
+        {
+            foreach (string text in profile)
+            {
+                Console.WriteLine(text);
+            }
+        }
+
+        public double ScoreMotifs(List<string> dnaStrings)
+        {
+            List<ProfileMatrixEntry> pm = DnaToProfileMatrix(dnaStrings);
+            double score = ScoreProfileMatrix(pm);
+            return score;
+        }
 
         /// <summary>
         /// Given profile matrix 'pm' return 'scoreFrac', which is the fractional 
@@ -125,7 +176,7 @@ namespace BioinfoAlgorithms
         } 
            
         /// <summary>
-        /// Returns a profile matrix given a list of dna sequences 'dnaStrings'
+        /// Returns a profile matrix given a list of dnaStrings sequences 'dnaStrings'
         /// </summary>
         public List<ProfileMatrixEntry> DnaToProfileMatrix(List<string> dnaStrings)
         {
@@ -288,7 +339,7 @@ namespace BioinfoAlgorithms
         /// <summary>
         /// Brute force approach to solving Implanted Motif Problem.
         /// It's based on observation that any (k,d)-motif must be at most d mismatches
-        /// apart from some k-mer appearing in one of the strings of dna.
+        /// apart from some k-mer appearing in one of the strings of dnaStrings.
         /// </summary>
         public List<string> MotifEnumerator(List<string> dnaStrings, int k, int d)
         {   
