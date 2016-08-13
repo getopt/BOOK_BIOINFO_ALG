@@ -51,7 +51,7 @@ namespace BioinfoAlgorithms
                                               "TACG",
                                               "GGGG",
                                               "CAAA" };
-                    pm = chapter.DnaToProfileMatrix(dnaStrings);
+                    pm = chapter.MotifsToProfileMatrix(dnaStrings);
                     string dna = "AAATGCTCGGAA";
                     k = 4;
                     Console.WriteLine(chapter.MostProbableKmer(dna, k, pm));
@@ -115,12 +115,12 @@ namespace BioinfoAlgorithms
 
                 for (int i = 1; i < t; i++)
                 {
-                    string motifCurrent = MostProbableKmer(dnaStrings[i], k, DnaToProfileMatrix(motifs));
+                    string motifCurrent = MostProbableKmer(dnaStrings[i], k, MotifsToProfileMatrix(motifs));
                     motifs.Add(motifCurrent);
                 }
                 PrintProfile(motifs);
 
-                if(ScoreProfileMatrix(DnaToProfileMatrix(motifs)) < ScoreProfileMatrix(DnaToProfileMatrix(bestMotifs)))
+                if(ScoreProfileMatrix(MotifsToProfileMatrix(motifs)) < ScoreProfileMatrix(MotifsToProfileMatrix(bestMotifs)))
                 {
                     bestMotifs = motifs;
                 }
@@ -136,7 +136,7 @@ namespace BioinfoAlgorithms
             Console.WriteLine(message);
             foreach (string text in profile)
                 Console.WriteLine(text);
-            Console.WriteLine("Score: " + ScoreProfileMatrix(DnaToProfileMatrix(profile)).ToString());
+            Console.WriteLine("Score: " + ScoreProfileMatrix(MotifsToProfileMatrix(profile)).ToString());
             Console.WriteLine();
         }
         /// <summary>
@@ -146,7 +146,7 @@ namespace BioinfoAlgorithms
         {
             foreach (string text in profile)
                 Console.WriteLine(text);
-            Console.WriteLine("Score: " + ScoreProfileMatrix(DnaToProfileMatrix(profile)).ToString());
+            Console.WriteLine("Score: " + ScoreProfileMatrix(MotifsToProfileMatrix(profile)).ToString());
             Console.WriteLine();
         }
         
@@ -190,7 +190,7 @@ namespace BioinfoAlgorithms
         /// <summary>
         /// Returns a profile matrix given a list of dnaStrings sequences 'dnaStrings'
         /// </summary>
-        public List<ProfileMatrixEntry> DnaToProfileMatrix(List<string> dnaStrings)
+        public List<ProfileMatrixEntry> MotifsToProfileMatrix(List<string> dnaStrings)
         {
             List<ProfileMatrixEntry> pm = new List<ProfileMatrixEntry>();
 
