@@ -19,6 +19,7 @@ namespace BioinfoAlgorithms
 
             List<string> dnaStrings;
             List<ProfileMatrixEntry> pm;
+            List<string> bestProfile;
             int k;
             int d;
             switch (excercise)
@@ -64,7 +65,18 @@ namespace BioinfoAlgorithms
                                                    "CCCTAACGAGACCT",
                                                    "CGTCAGAGGTACCT"};
                     k = 4;
-                    List<string> bestProfile = GreedyMotifSearch(dnaStrings,k,dnaStrings.Count);
+                    bestProfile = GreedyMotifSearch(dnaStrings,k,dnaStrings.Count);
+                    PrintProfile(bestProfile, "Best profile:");
+                    Console.ReadLine();
+                    break;
+                case "2E":
+                    dnaStrings = new List<string> {"TTACCTTAAC",
+                                                   "GATGTCTGTC",
+                                                   "ACGGCGTTAG",
+                                                   "CCCTAACGAG",
+                                                   "CGTCAGAGGT"};
+                    k = 4;
+                    bestProfile = GreedyMotifSearchWithPseudoCounts(dnaStrings,k,dnaStrings.Count);
                     PrintProfile(bestProfile, "Best profile:");
                     Console.ReadLine();
                     break;
@@ -89,6 +101,50 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        /// <summary>
+        /// The same algorythm GreedyMotifSearch, but when pseudocounts are added when generating
+        /// profile matrice (wth MotifsToProfileMatrixWithPsudoCounts()).
+        /// Greey motif algorythms trie to find the most probable profile matrix by starting from 
+        /// any of the k-mers in first dnaString from dnaStrings. The pseudocount trick is known
+        /// as Laplace's Rule of succession.
+        /// </summary>
+        public List<string> GreedyMotifSearchWithPseudoCounts(List<string> dnaStrings, int k, int t)
+        {
+            // get pm from first k-mers in each dnaString
+            List<string> bestMotifs = new List<string>();
+            foreach (string dnaString in dnaStrings)
+            {
+                string motif = dnaString.Substring(0, k);
+                bestMotifs.Add(motif);
+            }
+            PrintProfile(bestMotifs, "First profile:");
+
+            // loop through every k-mer of the first dnaString
+            List<int[]> windows = StringSlidingWindows(dnaStrings.First(), k);
+
+            foreach (int[] window in windows)
+            {
+                string motif = dnaStrings.First().Substring(window[0], k);
+
+                List<string> motifs = new List<string> {motif};
+
+                for (int i = 1; i < t; i++)
+                {
+                    string motifCurrent = MostProbableKmer(dnaStrings[i], k, 
+                                    MotifsToProfileMatrixWithPseudoCounts(motifs));
+                    motifs.Add(motifCurrent);
+                }
+                PrintProfile(motifs);
+
+                if(ScoreProfileMatrix(MotifsToProfileMatrixWithPseudoCounts(motifs)) < 
+                                ScoreProfileMatrix(MotifsToProfileMatrixWithPseudoCounts(bestMotifs)))
+                {
+                    bestMotifs = motifs;
+                }
+            }
+            return bestMotifs;
+        }
+
         /// <summary>
         /// Tries to find most probable profile matrix by starting from any of the k-mers 
         /// in first dnaString from dnaStrings.
@@ -186,6 +242,49 @@ namespace BioinfoAlgorithms
             }
             return scoreFrac;
         } 
+        
+        /// <summary>
+        /// Returns a profile matrix given a list of dnaStrings sequences 'dnaStrings'.
+        /// MotifsToProfileMatrixWithPseudoCounts() uses additional pseudo count of 1
+        /// for four nucleotides in order to prevent profile matrix from having 0
+        /// probablities. The pseudocount trick is known as Laplace's rule of succession.
+        /// </summary>
+        public List<ProfileMatrixEntry> MotifsToProfileMatrixWithPseudoCounts(List<string> dnaStrings)
+        {
+            List<ProfileMatrixEntry> pm = new List<ProfileMatrixEntry>();
+
+            for(int i = 0; i < dnaStrings.First().Length; i++)
+            {
+                List<string> sequence = new List<string>();
+
+                Dictionary<string, int> ntPosition = new Dictionary<string, int>();
+                foreach (string nt in Alphabet) {
+                    // ntPosition[nt] = 0;
+                    ntPosition[nt] = 1;  // initialzing nt counts at 1 which serves as a pseudocount
+                }
+
+                for (int j = 0; j < dnaStrings.Count; j++)
+                {
+                    if (dnaStrings[j].Length != dnaStrings.First().Length)
+                    {
+                        Console.WriteLine("DNA strings are of unequal length!");
+                        Environment.Exit(1); 
+                    }
+                
+                    string currentDna = dnaStrings[j];
+                    string currentNt = currentDna[i].ToString();
+                    ntPosition[currentNt] += 1;
+                }
+
+                foreach (string nt in Alphabet)
+                {
+                    double prob = ntPosition[nt]/(double)dnaStrings.Count;
+                    pm.Add(new ProfileMatrixEntry {Base = nt, Pos = i, Prob = prob});
+                }
+            }
+
+            return pm;
+        }
            
         /// <summary>
         /// Returns a profile matrix given a list of dnaStrings sequences 'dnaStrings'
