@@ -66,7 +66,7 @@ namespace BioinfoAlgorithms
                                                    "CGTCAGAGGTACCT"};
                     k = 4;
                     bestMotifs = GreedyMotifSearch(dnaStrings,k,dnaStrings.Count);
-                    PrintProfile(bestMotifs, "Best motifs:");
+                    PrintMotifs(bestMotifs, "Best motifs:");
                     Console.ReadLine();
                     break;
                 case "2E":
@@ -77,7 +77,7 @@ namespace BioinfoAlgorithms
                                                    "CGTCAGAGGT"};
                     k = 4;
                     bestMotifs = GreedyMotifSearchWithPseudoCounts(dnaStrings,k,dnaStrings.Count);
-                    PrintProfile(bestMotifs, "Best motifs:");
+                    PrintMotifs(bestMotifs, "Best motifs:");
                     pm = MotifsToProfileMatrix(bestMotifs);
                     PrintPm(pm);
                     Console.ReadLine();
@@ -90,7 +90,22 @@ namespace BioinfoAlgorithms
                                                    "CGTCAGAGGT"};
                     k = 4;
                     bestMotifs = RandomizedMotifSearch(dnaStrings,k,dnaStrings.Count);
-                    PrintProfile(bestMotifs, "Best motifs:");
+                    PrintMotifs(bestMotifs, "Best motifs:");
+                    pm = MotifsToProfileMatrix(bestMotifs);
+                    PrintPm(pm);
+                    Console.ReadLine();
+                    break; 
+                case "2F_iterative":
+                    dnaStrings = new List<string> {"TTACCTTAAC",
+
+                                                   "GATGTCTGTC",
+                                                   "CCGGCGTTAG",
+                                                   "CACTAACGAG",
+                                                   "CGTCAGAGGT"};
+                    k = 4;
+                    int iterations = 100;
+                    bestMotifs = IterationsOfRandomizedMotifSearch(dnaStrings,k,dnaStrings.Count, iterations);
+                    PrintMotifs(bestMotifs, "Best motifs:");
                     pm = MotifsToProfileMatrix(bestMotifs);
                     PrintPm(pm);
                     Console.ReadLine();
@@ -116,6 +131,26 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        public List<string> IterationsOfRandomizedMotifSearch(List<string> dnaStrings, int k, int t, int iterations)
+        {
+            List<string> bestMotifs = new List<string>();
+            double bestMotifScore = 1000000.0;
+
+            for (int i = 0; i < iterations; i++)
+            {
+                List<string> motif = RandomizedMotifSearch(dnaStrings, k, t);
+                double motifScore = ScoreProfileMatrix(MotifsToProfileMatrix(motif));
+
+                if (motifScore < bestMotifScore)
+                {
+                    bestMotifs = motif;
+                    bestMotifScore = motifScore;
+                }
+
+            }
+
+            return bestMotifs;
+        }
         public List<string> RandomizedMotifSearch(List<string> dnaStrings, int k, int t)
         {
             // first time around select motifs from each dnaString at random
@@ -123,9 +158,13 @@ namespace BioinfoAlgorithms
             foreach (string dna in dnaStrings)
             {
                 int i = Program.Rnd.Next(dna.Length - k + 1);
+                // Console.WriteLine("First random index: " + i.ToString());
                 string motif = dna.Substring(i, k);
                 motifs.Add(motif);
             }
+            // PrintMotifs(motifs, "First motif:");
+            // Console.WriteLine("First PM:");
+            // PrintPm(MotifsToProfileMatrix(motifs));
 
             List<string> bestMotifs = motifs;
 
@@ -172,7 +211,7 @@ namespace BioinfoAlgorithms
                 string motif = dnaString.Substring(0, k);
                 bestMotifs.Add(motif);
             }
-            PrintProfile(bestMotifs, "First profile:");
+            PrintMotifs(bestMotifs, "First profile:");
 
             // loop through every k-mer of the first dnaString
             List<int[]> windows = StringSlidingWindows(dnaStrings.First(), k);
@@ -189,7 +228,7 @@ namespace BioinfoAlgorithms
                                     MotifsToProfileMatrixWithPseudoCounts(motifs));
                     motifs.Add(motifCurrent);
                 }
-                PrintProfile(motifs);
+                PrintMotifs(motifs);
 
                 if(ScoreProfileMatrix(MotifsToProfileMatrixWithPseudoCounts(motifs)) < 
                                 ScoreProfileMatrix(MotifsToProfileMatrixWithPseudoCounts(bestMotifs)))
@@ -213,7 +252,7 @@ namespace BioinfoAlgorithms
                 string motif = dnaString.Substring(0, k);
                 bestMotifs.Add(motif);
             }
-            PrintProfile(bestMotifs, "First profile:");
+            PrintMotifs(bestMotifs, "First profile:");
 
             // loop through every k-mer of the first dnaString
             List<int[]> windows = StringSlidingWindows(dnaStrings.First(), k);
@@ -229,7 +268,7 @@ namespace BioinfoAlgorithms
                     string motifCurrent = MostProbableKmer(dnaStrings[i], k, MotifsToProfileMatrix(motifs));
                     motifs.Add(motifCurrent);
                 }
-                PrintProfile(motifs);
+                PrintMotifs(motifs);
 
                 if(ScoreProfileMatrix(MotifsToProfileMatrix(motifs)) < ScoreProfileMatrix(MotifsToProfileMatrix(bestMotifs)))
                 {
@@ -242,7 +281,7 @@ namespace BioinfoAlgorithms
         /// <summary>
         /// Print strings in profile to console with a message
         /// </summary>
-        public void PrintProfile(List<string> profile, string message)
+        public void PrintMotifs(List<string> profile, string message)
         {
             Console.WriteLine(message);
             foreach (string text in profile)
@@ -253,7 +292,7 @@ namespace BioinfoAlgorithms
         /// <summary>
         /// Print strings in profile to console 
         /// </summary>
-        public void PrintProfile(List<string> profile)
+        public void PrintMotifs(List<string> profile)
         {
             foreach (string text in profile)
                 Console.WriteLine(text);

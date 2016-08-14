@@ -64,7 +64,8 @@ namespace BioinfoAlgorithms
         static void Main(string[] args)
         {
             // var run_2H = new RunChapter02("2H"); 
-            var run_2F = new RunChapter02("2F");
+            var run_2F = new RunChapter02("2F_iterative");
+            // var run_2F = new RunChapter02("2F");
             // var run_2E = new RunChapter02("2E");
             // var run_2D = new RunChapter02("2D");
             // var run_2C = new RunChapter02("2C");
