@@ -19,7 +19,7 @@ namespace BioinfoAlgorithms
 
             List<string> dnaStrings;
             List<ProfileMatrixEntry> pm;
-            List<string> bestProfile;
+            List<string> bestMotifs;
             int k;
             int d;
             switch (excercise)
@@ -65,8 +65,8 @@ namespace BioinfoAlgorithms
                                                    "CCCTAACGAGACCT",
                                                    "CGTCAGAGGTACCT"};
                     k = 4;
-                    bestProfile = GreedyMotifSearch(dnaStrings,k,dnaStrings.Count);
-                    PrintProfile(bestProfile, "Best profile:");
+                    bestMotifs = GreedyMotifSearch(dnaStrings,k,dnaStrings.Count);
+                    PrintProfile(bestMotifs, "Best motifs:");
                     Console.ReadLine();
                     break;
                 case "2E":
@@ -76,12 +76,25 @@ namespace BioinfoAlgorithms
                                                    "CCCTAACGAG",
                                                    "CGTCAGAGGT"};
                     k = 4;
-                    bestProfile = GreedyMotifSearchWithPseudoCounts(dnaStrings,k,dnaStrings.Count);
-                    PrintProfile(bestProfile, "Best profile:");
-                    pm = MotifsToProfileMatrix(bestProfile);
+                    bestMotifs = GreedyMotifSearchWithPseudoCounts(dnaStrings,k,dnaStrings.Count);
+                    PrintProfile(bestMotifs, "Best motifs:");
+                    pm = MotifsToProfileMatrix(bestMotifs);
                     PrintPm(pm);
                     Console.ReadLine();
                     break;
+                case "2F":
+                    dnaStrings = new List<string> {"TTACCTTAAC",
+                                                   "GATGTCTGTC",
+                                                   "CCGGCGTTAG",
+                                                   "CACTAACGAG",
+                                                   "CGTCAGAGGT"};
+                    k = 4;
+                    bestMotifs = RandomizedMotifSearch(dnaStrings,k,dnaStrings.Count);
+                    PrintProfile(bestMotifs, "Best motifs:");
+                    pm = MotifsToProfileMatrix(bestMotifs);
+                    PrintPm(pm);
+                    Console.ReadLine();
+                    break; 
                 case "2H":
                     dnaStrings = new List<string>
                     {
@@ -103,12 +116,52 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        public List<string> RandomizedMotifSearch(List<string> dnaStrings, int k, int t)
+        {
+            // first time around select motifs from each dnaString at random
+            List<string> motifs = new List<string>();
+            foreach (string dna in dnaStrings)
+            {
+                int i = Program.Rnd.Next(dna.Length - k + 1);
+                string motif = dna.Substring(i, k);
+                motifs.Add(motif);
+            }
+
+            List<string> bestMotifs = motifs;
+
+            while (true)
+            {
+                motifs = MotifsFromPmAndDnaStrings(MotifsToProfileMatrix(motifs), dnaStrings);
+
+                if (ScoreProfileMatrix(MotifsToProfileMatrix(motifs)) <
+                    ScoreProfileMatrix(MotifsToProfileMatrix(bestMotifs)))
+                {
+                    bestMotifs = motifs;
+                }
+                else
+                {
+                    return bestMotifs;
+                }
+            }
+        }
+
+        public List<string> MotifsFromPmAndDnaStrings(List<ProfileMatrixEntry> pm, List<string> dnaStrings)
+        {
+            List<string> motifs = new List<string>();
+            foreach (string dna in dnaStrings)
+            {
+                string motif = MostProbableKmer(dna, pm.Count/Program.AlpabetLength, pm);
+                motifs.Add(motif);
+            }
+            return motifs;
+        }       
+
         /// <summary>
-        /// The same algorythm GreedyMotifSearch, but when pseudocounts are added when generating
-        /// profile matrice (wth MotifsToProfileMatrixWithPsudoCounts()).
-        /// Greey motif algorythms trie to find the most probable profile matrix by starting from 
-        /// any of the k-mers in first dnaString from dnaStrings. The pseudocount trick is known
-        /// as Laplace's Rule of succession.
+        /// The same algorythm as GreedyMotifSearch, but when pseudocounts are added when generating
+        /// profile matrixe (wth MotifsToProfileMatrixWithPsudoCounts()).
+        /// Greey motif algorythms tries to find the most probable motifs by starting buidling profile matrix from 
+        /// any of the k-mers in the first dnaString from dnaStrings. The pseudocount trick is known
+        /// as Laplace's Rule of Succession.
         /// </summary>
         public List<string> GreedyMotifSearchWithPseudoCounts(List<string> dnaStrings, int k, int t)
         {
@@ -148,8 +201,8 @@ namespace BioinfoAlgorithms
         }
 
         /// <summary>
-        /// Tries to find most probable profile matrix by starting from any of the k-mers 
-        /// in first dnaString from dnaStrings.
+        /// Tries to find most probable motifs by starting building profile matrix from any of the k-mers 
+        /// in the first dnaString from dnaStrings.
         /// </summary>
         public List<string> GreedyMotifSearch(List<string> dnaStrings, int k, int t)
         {
