@@ -78,6 +78,8 @@ namespace BioinfoAlgorithms
                     k = 4;
                     bestProfile = GreedyMotifSearchWithPseudoCounts(dnaStrings,k,dnaStrings.Count);
                     PrintProfile(bestProfile, "Best profile:");
+                    pm = MotifsToProfileMatrix(bestProfile);
+                    PrintPm(pm);
                     Console.ReadLine();
                     break;
                 case "2H":
