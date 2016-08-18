@@ -97,7 +97,6 @@ namespace BioinfoAlgorithms
                     break; 
                 case "2F_iterative":
                     dnaStrings = new List<string> {"TTACCTTAAC",
-
                                                    "GATGTCTGTC",
                                                    "CCGGCGTTAG",
                                                    "CACTAACGAG",
@@ -109,7 +108,20 @@ namespace BioinfoAlgorithms
                     pm = MotifsToProfileMatrix(bestMotifs);
                     PrintPm(pm);
                     Console.ReadLine();
-                    break; 
+                    break;
+                case "2G":
+                    dnaStrings = new List<string> {"TTACCTTAAC",
+                                                   "GATGTCTGTC",
+                                                   "CCGGCGTTAG",
+                                                   "CACTAACGAG",
+                                                   "CGTCAGAGGT"};
+                    
+                    k = 4;
+                    int n_iter = 100;
+                    bestMotifs = GibbsSampler(dnaStrings, k, dnaStrings.Count, n_iter);
+                    PrintMotifs(bestMotifs, "Best GibbsSampler motif:");
+                    Console.ReadLine();
+                    break;
                 case "2H":
                     dnaStrings = new List<string>
                     {
@@ -131,6 +143,61 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+
+        public List<string> GibbsSampler(List<string> dnaStrings, int k, int t, int n )
+        {
+            // first time around select motifs from each dnaString at random
+            List<string> motifs = new List<string>();
+            int i;
+            foreach (string dna in dnaStrings)
+            {
+                i = Program.Rnd.Next(0, dna.Length - k + 1);
+                // Console.WriteLine("First random index: " + i.ToString());
+                motifs.Add(dna.Substring(i, k));
+            }
+            // PrintMotifs(motifs, "First motif:");
+            // Console.WriteLine("First PM:");
+            // PrintPm(MotifsToProfileMatrix(motifs));
+            List<string> bestMotifs = motifs;
+            PrintMotifs(bestMotifs, "First randomly picked motif:");
+
+            for (int j = 0; j < n; j++)
+            {
+                i = Program.Rnd.Next(0,t); // index for temporary removal of a corresponding motif
+
+                List<string> motifsMinusOne = new List<string>();
+                for(int m = 0; m < t; m++)
+                    motifsMinusOne.Add(m != i ? bestMotifs[m] : "");
+
+                motifs = motifsMinusOne;
+                string motif = ProfileRandomlyGeneratedKmer(motifsMinusOne, dnaStrings[i]);
+                motifs[i] = motif;
+
+                PrintMotifs(motifs);
+
+                if (ScoreProfileMatrix(MotifsToProfileMatrix(motifs)) <
+                    ScoreProfileMatrix(MotifsToProfileMatrix(bestMotifs)))
+                    bestMotifs = motifs;
+            }
+
+            return bestMotifs;
+        }
+
+        public string ProfileRandomlyGeneratedKmer(List<string> motifsMinusOne, string dna)
+        {
+            string motif;
+            List<string> motifs = new List<string>();
+            foreach(string motifCurrnt in motifsMinusOne)
+                if(motifCurrnt != "")
+                    motifs.Add(motifCurrnt);
+
+            List<ProfileMatrixEntry> profileMatrix = MotifsToProfileMatrixWithPseudoCounts(motifs);
+
+            motif = MostProbableKmer(dna, motifs.First().Length, profileMatrix);
+
+            return motif;
+        }
+
         public List<string> IterationsOfRandomizedMotifSearch(List<string> dnaStrings, int k, int t, int iterations)
         {
             List<string> bestMotifs = new List<string>();
