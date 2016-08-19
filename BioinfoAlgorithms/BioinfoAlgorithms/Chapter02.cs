@@ -22,6 +22,7 @@ namespace BioinfoAlgorithms
             List<string> bestMotifs;
             int k;
             int d;
+            int iterations;
             switch (excercise)
             {
                 case "2A":
@@ -102,7 +103,7 @@ namespace BioinfoAlgorithms
                                                    "CACTAACGAG",
                                                    "CGTCAGAGGT"};
                     k = 4;
-                    int iterations = 100;
+                    iterations = 100;
                     bestMotifs = IterationsOfRandomizedMotifSearch(dnaStrings,k,dnaStrings.Count, iterations);
                     PrintMotifs(bestMotifs, "Best motifs:");
                     pm = MotifsToProfileMatrix(bestMotifs);
@@ -117,9 +118,23 @@ namespace BioinfoAlgorithms
                                                    "CGTCAGAGGT"};
                     
                     k = 4;
-                    int n_iter = 100;
+                    int n_iter = 1000;
                     bestMotifs = GibbsSampler(dnaStrings, k, dnaStrings.Count, n_iter);
                     PrintMotifs(bestMotifs, "Best GibbsSampler motif:");
+                    Console.ReadLine();
+                    break;
+                case "2G_iterative":
+                    dnaStrings = new List<string> {"TTACCTTAAC",
+                                                   "GATGTCTGTC",
+                                                   "CCGGCGTTAG",
+                                                   "CACTAACGAG",
+                                                   "CGTCAGAGGT"};
+                    k = 4;
+                    iterations = 100;
+                    bestMotifs = IterationsOfGibbsSampler(dnaStrings, k, dnaStrings.Count, iterations);
+                    PrintMotifs(bestMotifs, "Best motifs:");
+                    pm = MotifsToProfileMatrix(bestMotifs);
+                    PrintPm(pm);
                     Console.ReadLine();
                     break;
                 case "2H":
@@ -143,6 +158,26 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        public List<string> IterationsOfGibbsSampler(List<string> dnaStrings, int k, int t, int iterations)
+        {
+            List<string> bestMotifs = new List<string>();
+            double bestMotifScore = 1000000.0;
+
+            for (int i = 0; i < iterations; i++)
+            {
+                List<string> motif = GibbsSampler(dnaStrings, k, t, iterations);
+                double motifScore = ScoreProfileMatrix(MotifsToProfileMatrix(motif));
+
+                if (motifScore < bestMotifScore)
+                {
+                    bestMotifs = motif;
+                    bestMotifScore = motifScore;
+                }
+
+            }
+
+            return bestMotifs;
+        }
 
         public List<string> GibbsSampler(List<string> dnaStrings, int k, int t, int n )
         {
@@ -152,14 +187,10 @@ namespace BioinfoAlgorithms
             foreach (string dna in dnaStrings)
             {
                 i = Program.Rnd.Next(0, dna.Length - k + 1);
-                // Console.WriteLine("First random index: " + i.ToString());
                 motifs.Add(dna.Substring(i, k));
             }
-            // PrintMotifs(motifs, "First motif:");
-            // Console.WriteLine("First PM:");
-            // PrintPm(MotifsToProfileMatrix(motifs));
+
             List<string> bestMotifs = motifs;
-            PrintMotifs(bestMotifs, "First randomly picked motif:");
 
             for (int j = 0; j < n; j++)
             {
@@ -173,8 +204,6 @@ namespace BioinfoAlgorithms
                 string motif = ProfileRandomlyGeneratedKmer(motifsMinusOne, dnaStrings[i]);
                 motifs[i] = motif;
 
-                PrintMotifs(motifs);
-
                 if (ScoreProfileMatrix(MotifsToProfileMatrix(motifs)) <
                     ScoreProfileMatrix(MotifsToProfileMatrix(bestMotifs)))
                     bestMotifs = motifs;
@@ -185,17 +214,42 @@ namespace BioinfoAlgorithms
 
         public string ProfileRandomlyGeneratedKmer(List<string> motifsMinusOne, string dna)
         {
-            string motif;
             List<string> motifs = new List<string>();
             foreach(string motifCurrnt in motifsMinusOne)
                 if(motifCurrnt != "")
                     motifs.Add(motifCurrnt);
+            
+            List<ProfileMatrixEntry> pm = MotifsToProfileMatrixWithPseudoCounts(motifs);
 
-            List<ProfileMatrixEntry> profileMatrix = MotifsToProfileMatrixWithPseudoCounts(motifs);
+            List<int[]> windows = StringSlidingWindows(dna, motifs.First().Length);
 
-            motif = MostProbableKmer(dna, motifs.First().Length, profileMatrix);
+            List<string> kmers = new List<string>(); 
+            List<double> probs = new List<double>(); 
+            foreach (int[] window in windows)
+            {
+                string kmer = dna.Substring(window[0], motifs.First().Length);
+                double currentProb = KmerProbabilityFromPm(pm, kmer);
+                kmers.Add(kmer);
+                probs.Add(currentProb);
+            }
 
-            return motif;
+            double rnd = GetRandomNumber(0.0, probs.Sum());
+
+            double current = 0.0;
+            for (int i = 0; i < kmers.Count; i++)
+            {
+                current += probs[i];
+                if (rnd <= current)
+                {
+                    return kmers[i];
+                }
+            }
+            return null;
+        }
+
+        public double GetRandomNumber(double minimum, double maximum)
+        {
+            return Program.Rnd.NextDouble() * (maximum - minimum) + minimum;
         }
 
         public List<string> IterationsOfRandomizedMotifSearch(List<string> dnaStrings, int k, int t, int iterations)
@@ -229,9 +283,9 @@ namespace BioinfoAlgorithms
                 string motif = dna.Substring(i, k);
                 motifs.Add(motif);
             }
-            // PrintMotifs(motifs, "First motif:");
-            // Console.WriteLine("First PM:");
-            // PrintPm(MotifsToProfileMatrix(motifs));
+            PrintMotifs(motifs, "First motif:");
+            Console.WriteLine("First PM:");
+            PrintPm(MotifsToProfileMatrix(motifs));
 
             List<string> bestMotifs = motifs;
 
@@ -419,9 +473,11 @@ namespace BioinfoAlgorithms
                 List<string> sequence = new List<string>();
 
                 Dictionary<string, int> ntPosition = new Dictionary<string, int>();
+                int totalNt = 0;
                 foreach (string nt in Alphabet) {
                     // ntPosition[nt] = 0;
                     ntPosition[nt] = 1;  // initialzing nt counts at 1 which serves as a pseudocount
+                    totalNt += 1;
                 }
 
                 for (int j = 0; j < dnaStrings.Count; j++)
@@ -435,11 +491,12 @@ namespace BioinfoAlgorithms
                     string currentDna = dnaStrings[j];
                     string currentNt = currentDna[i].ToString();
                     ntPosition[currentNt] += 1;
+                    totalNt += 1;
                 }
 
                 foreach (string nt in Alphabet)
                 {
-                    double prob = ntPosition[nt]/(double)dnaStrings.Count;
+                    double prob = ntPosition[nt]/(double)totalNt; // x2 since each nt is initated at 1
                     pm.Add(new ProfileMatrixEntry {Base = nt, Pos = i, Prob = prob});
                 }
             }
@@ -506,7 +563,7 @@ namespace BioinfoAlgorithms
                 }
                 Console.WriteLine();
             }
-            Console.ReadLine();
+            // Console.ReadLine();
         }
         
         /// <summary>
