@@ -158,6 +158,9 @@ namespace BioinfoAlgorithms
 
     class Chapter02:Chapter01
     {
+        /// <summary>
+        /// Ancilary funtionc that helps to run GibsSampler() an 'iteration' number of times.
+        /// </summary>
         public List<string> IterationsOfGibbsSampler(List<string> dnaStrings, int k, int t, int iterations)
         {
             List<string> bestMotifs = new List<string>();
@@ -179,6 +182,15 @@ namespace BioinfoAlgorithms
             return bestMotifs;
         }
 
+        /// <summary>
+        /// GibbsSampler, the same as RandomizedMotifSearch(), at first creates a bogus motifs matrix
+        /// from the first kmers in each dna strings from dnaStrings. But what is different in GibbsSampler
+        /// is the motifs matrix updating step. Instead of creating an updated matrix that consists of the list
+        /// of all entirely new motifs (the ones that are most likely given the motifs matrix via MostProbableKmer()), the 
+        /// Gibbs Sampler almost randomly removes one kmer from motifs matrix, and then replace that kmer with 
+        /// an almost randomly chosen kmer from the respective dna strings, where randomness of choice is biased
+        /// by the motifs matrix implemented via ProfileRandomlyGeneratedKmer().
+        /// </summary>
         public List<string> GibbsSampler(List<string> dnaStrings, int k, int t, int n )
         {
             // first time around select motifs from each dnaString at random
@@ -212,6 +224,10 @@ namespace BioinfoAlgorithms
             return bestMotifs;
         }
 
+        /// <summary>
+        /// Given a motifs matrix 'motifsMinusOne' and the dna string 'dna' choose at random a kmer from dna
+        /// where randomness of choice is biased be the motifs matrix.
+        /// </summary>
         public string ProfileRandomlyGeneratedKmer(List<string> motifsMinusOne, string dna)
         {
             List<string> motifs = new List<string>();
@@ -246,12 +262,19 @@ namespace BioinfoAlgorithms
             }
             return null;
         }
-
+        
+        /// <summary>
+        /// A function that returns a randomly generate double number in the region between
+        /// 'minimum' and 'maximum' numbers.
+        /// </summary>
         public double GetRandomNumber(double minimum, double maximum)
         {
             return Program.Rnd.NextDouble() * (maximum - minimum) + minimum;
         }
 
+        /// <summary>
+        /// Ancilary funtionc that helps to run RandomizedMotifSearch() an 'iteration' number of times.
+        /// </summary>
         public List<string> IterationsOfRandomizedMotifSearch(List<string> dnaStrings, int k, int t, int iterations)
         {
             List<string> bestMotifs = new List<string>();
@@ -272,6 +295,14 @@ namespace BioinfoAlgorithms
 
             return bestMotifs;
         }
+
+        /// <summary>
+        /// At first we randomly select kmers from each dna string in dnaStrings to create the original
+        /// purely random motifs matrix. Next we use the motifs matrix to create a new motifs matrix by
+        /// selecting most probable kmers from each dna string in the dnaSstrings list. Each time we create
+        /// a new motifs matrix, we calculate its profile matrix and the associate score. Once the algorythm
+        /// doesn't any more improve the score, we return the motifs matrix.
+        /// </summary>
         public List<string> RandomizedMotifSearch(List<string> dnaStrings, int k, int t)
         {
             // first time around select motifs from each dnaString at random
@@ -304,7 +335,11 @@ namespace BioinfoAlgorithms
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Given a profile matrix (pm) and a list of dna sequences (dnaStrings) return motifs matrix
+        /// where each motif is the most probable kmer given the pm and each of dna strings.
+        /// </summary>
         public List<string> MotifsFromPmAndDnaStrings(List<ProfileMatrixEntry> pm, List<string> dnaStrings)
         {
             List<string> motifs = new List<string>();
