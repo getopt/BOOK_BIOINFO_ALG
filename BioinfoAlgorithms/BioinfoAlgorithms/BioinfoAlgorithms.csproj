@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Chapter01.cs" />
     <Compile Include="Chapter02.cs" />
+    <Compile Include="Chapter03.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
