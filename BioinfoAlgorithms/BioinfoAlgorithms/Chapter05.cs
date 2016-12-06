@@ -36,17 +36,15 @@ namespace BioinfoAlgorithms
             if (money == 0)
                 return 0;
             int minNumCoins = 100000;
-            for (int i = 0; i < coins.Count; i++)
+            foreach (int coin in coins)
             {
-                if (money >= coins[i])
+                if (money >= coin)
                 {
-                    Console.WriteLine(minNumCoins.ToString());
-                    int numCoins = RecursiveChange(money - coins[i], coins);
+                    int numCoins = RecursiveChange(money - coin, coins);
                     if (numCoins + 1 < minNumCoins)
                     {
                         minNumCoins = numCoins + 1;
                     }
-                    Console.WriteLine(minNumCoins.ToString());
                 }
             }
             return minNumCoins;
