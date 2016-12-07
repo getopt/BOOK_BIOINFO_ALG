@@ -63,7 +63,8 @@ namespace BioinfoAlgorithms
 
         static void Main(string[] args)
         {
-            var run_5_RecChange = new RunChapter05("_RecursiveChange");
+            var run_5A_DPChange = new RunChapter05("5A_DPChange");
+            // var run_5_RecChange = new RunChapter05("_RecursiveChange");
 
             // var run_3A = new RunChapter03("test_graph");
 
