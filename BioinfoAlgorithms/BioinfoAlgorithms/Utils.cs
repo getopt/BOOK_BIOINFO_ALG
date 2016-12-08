@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace BioinfoAlgorithms
 {
+    public class Cell
+    {
+        public Cell() { }
+        public int Row;
+        public int Column;
+        public int Score;
+    }
     // from http://stackoverflow.com/questions/972307/can-you-loop-through-all-enum-values
     public static class EnumUtil {
         public static IEnumerable<T> GetValues<T>() {

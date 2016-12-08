@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace BioinfoAlgorithms
 
             List<int> coins = new List<int>() {1,4,5};
             int money = 7;
+
             switch (excercise)
             {
                 case "_RecursiveChange":

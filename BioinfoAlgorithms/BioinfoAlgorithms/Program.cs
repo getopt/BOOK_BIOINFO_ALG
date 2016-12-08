@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace BioinfoAlgorithms
 {
+    public enum AlphabetEnum
+    {
+        A,
+        C,
+        G,
+        T,
+    }
     class Program
     {
-        public enum AlphabetEnum
-        {
-            A,
-            C,
-            G,
-            T,
-        }
 
         public static Random Rnd = new Random();
 
