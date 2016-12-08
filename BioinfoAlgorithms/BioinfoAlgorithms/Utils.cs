@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,12 +12,32 @@ namespace BioinfoAlgorithms
         public Cell() { }
         public int Row;
         public int Column;
-        public int Score;
+        public int Weight;
     }
+
     // from http://stackoverflow.com/questions/972307/can-you-loop-through-all-enum-values
     public static class EnumUtil {
         public static IEnumerable<T> GetValues<T>() {
             return Enum.GetValues(typeof(T)).Cast<T>();
+        }
+    }
+
+    public class CellList
+    {
+        public List<Cell> InternalList = new List<Cell>();
+
+        public void Add(int row, int column, int weight)
+        {
+            InternalList.Add(new Cell() {Row = row, Column = column, Weight = weight});
+        }
+        public static IEnumerable<int> GetWeight(CellList cellList, int i, int j)
+        {
+            var weights = from cell in cellList.InternalList
+                where cell.Row == i
+                where cell.Column == j
+                select cell.Weight;
+
+            return weights;
         }
     }
 
