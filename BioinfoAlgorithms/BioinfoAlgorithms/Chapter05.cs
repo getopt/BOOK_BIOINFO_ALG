@@ -9,10 +9,11 @@ namespace BioinfoAlgorithms
 {
     class RunChapter05
     {
+        Data data = new Data();
         public RunChapter05(string excercise)
         {
             Chapter05 chapter = new Chapter05();
-
+            
             List<int> coins = new List<int>() {1,4,5};
             int money = 7;
 
@@ -24,6 +25,11 @@ namespace BioinfoAlgorithms
                     break;
                 case "5A_DPChange":
                     Console.WriteLine(chapter.DPChange(money, coins));
+                    Console.ReadLine();
+                    break;
+                case "5B_ManhattanTourist":
+                    int pathLength = chapter.ManhattanTourist(2, 2, data.Down, data.Right);
+                    Console.WriteLine(pathLength);
                     Console.ReadLine();
                     break;
                 default:
@@ -72,6 +78,42 @@ namespace BioinfoAlgorithms
                 }
             }
             return minNumCoins;
+        }
+
+        public int ManhattanTourist(int n, int m, CellList down, CellList right)
+        {
+            CellList path = new CellList();
+            path.Add(0,0,0);
+
+            for (int i = 1; i <= n; i++)
+            {
+                var weightUpSum = (int) CellList.GetWeight(path, i - 1, 0).First();
+                var weightDown = (int)CellList.GetWeight(down, i, 0).First();
+                path.Add(i, 0, weightUpSum + weightDown);
+            }
+            for (int j = 1; j <= m; j++)
+            {
+                var weightToLeft = (int) CellList.GetWeight(path, 0, j - 1).First();
+                var weightRight = (int)CellList.GetWeight(right, 0, j).First();
+                path.Add(0, j, weightToLeft + weightRight);
+            }
+            for (int i = 1; i <= n; i++)
+            {
+                for (int j = 1; j <= m; j++)
+                {
+                    path.Add(i, j, Math.Max(
+                        (int)CellList.GetWeight(path, i-1, j).First() +
+                        (int)CellList.GetWeight(down, i, j).First(),
+                        (int)CellList.GetWeight(path, i, j-1).First() +
+                        (int)CellList.GetWeight(right, i, j).First()
+                        )
+                    );
+                }
+            }
+
+            int pathLength = (int)CellList.GetWeight(path, n, m).First();
+
+            return pathLength;
         }
     }
 }

@@ -442,7 +442,7 @@ namespace BioinfoAlgorithms
             Console.WriteLine(message);
             foreach (string text in profile)
                 Console.WriteLine(text);
-            Console.WriteLine("Score: " + ScoreProfileMatrix(MotifsToProfileMatrix(profile)).ToString());
+            Console.WriteLine("Weight: " + ScoreProfileMatrix(MotifsToProfileMatrix(profile)).ToString());
             Console.WriteLine();
         }
         /// <summary>
@@ -452,7 +452,7 @@ namespace BioinfoAlgorithms
         {
             foreach (string text in profile)
                 Console.WriteLine(text);
-            Console.WriteLine("Score: " + ScoreProfileMatrix(MotifsToProfileMatrix(profile)).ToString());
+            Console.WriteLine("Weight: " + ScoreProfileMatrix(MotifsToProfileMatrix(profile)).ToString());
             Console.WriteLine();
         }
         
