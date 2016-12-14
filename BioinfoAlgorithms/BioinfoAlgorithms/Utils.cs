@@ -25,7 +25,14 @@ namespace BioinfoAlgorithms
     public class CellList
     {
         public List<Cell> InternalList = new List<Cell>();
-
+        
+        /// <summary>
+        /// Add Cell object to cell list. No checking if cell 
+        /// with such row and columns already exists.
+        /// </summary>
+        /// <param name="row">row index</param>
+        /// <param name="column">column index</param>
+        /// <param name="weight">value to put in the cell</param>
         public void Add(int row, int column, int weight)
         {
             InternalList.Add(new Cell() {Row = row, Column = column, Weight = weight});
