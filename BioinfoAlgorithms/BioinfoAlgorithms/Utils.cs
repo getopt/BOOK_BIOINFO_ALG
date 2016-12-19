@@ -7,24 +7,17 @@ using System.Threading.Tasks;
 
 namespace BioinfoAlgorithms
 {
-    public class Cell
+    public class Cell<T>
     {
         public Cell() { }
         public int Row;
         public int Column;
-        public int Weight;
-    }
-
-    // from http://stackoverflow.com/questions/972307/can-you-loop-through-all-enum-values
-    public static class EnumUtil {
-        public static IEnumerable<T> GetValues<T>() {
-            return Enum.GetValues(typeof(T)).Cast<T>();
-        }
+        public T Weight;
     }
 
     public class CellList
     {
-        public List<Cell> InternalList = new List<Cell>();
+        public List<Cell<object>> InternalList = new List<Cell<object>>();
         
         /// <summary>
         /// Add Cell object to cell list. No checking if cell 
@@ -35,16 +28,29 @@ namespace BioinfoAlgorithms
         /// <param name="weight">value to put in the cell</param>
         public void Add(int row, int column, int weight)
         {
-            InternalList.Add(new Cell() {Row = row, Column = column, Weight = weight});
+            var item = new Cell<object>
+            {
+                Row = row,
+                Column = column,
+                Weight = weight
+            };
+            InternalList.Add(item);
         }
-        public static IEnumerable<int> GetWeight(CellList cellList, int i, int j)
+        public static IEnumerable<T> GetWeight<T>(CellList cellList, int i, int j)
         {
-            var weights = from cell in cellList.InternalList
-                where cell.Row == i
-                where cell.Column == j
-                select cell.Weight;
+            var weights =
+                cellList.InternalList.Where(cell => cell.Row == i)
+                    .Where(cell => cell.Column == j)
+                    .Select(cell => cell.Weight);
 
-            return weights;
+            return (IEnumerable<T>) weights;
+        }
+    }
+    
+    // from http://stackoverflow.com/questions/972307/can-you-loop-through-all-enum-values
+    public static class EnumUtil {
+        public static IEnumerable<T> GetValues<T>() {
+            return Enum.GetValues(typeof(T)).Cast<T>();
         }
     }
 

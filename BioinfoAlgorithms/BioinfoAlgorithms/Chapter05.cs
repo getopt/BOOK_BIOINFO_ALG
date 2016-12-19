@@ -38,7 +38,6 @@ namespace BioinfoAlgorithms
                 case "5C_OutputLCS":
                     CellList backtrack = chapter.LCSBactrack(v, w);
                     chapter.OutputLCS(backtrack, v, 4, 4);
-                    Console.WriteLine(pathLength);
                     Console.ReadLine();
                     break;
                 default:
@@ -138,13 +137,12 @@ namespace BioinfoAlgorithms
             {
                 for (int j = 1; j < w.Length; j++)
                 {
-                    scores.Add(i, j, Math.Max(
-                        (int)CellList.GetWeight(path, i-1, j).First() +
-                        (int)CellList.GetWeight(down, i, j).First(),
-                        (int)CellList.GetWeight(path, i, j-1).First() +
-                        (int)CellList.GetWeight(right, i, j).First()
+                    scores.Add(i, j, 
+                        Math.Max((int)CellList.GetWeight(scores, i - 1, j).First(),
+                            Math.Max((int)CellList.GetWeight(scores, i, j - 1).First(),
+                                     v[i] == w[i] ? (int)CellList.GetWeight(scores, i - 1, j - 1).First() + 1 : 0)
                         )
-                    
+                    );
                 }
             }
         }

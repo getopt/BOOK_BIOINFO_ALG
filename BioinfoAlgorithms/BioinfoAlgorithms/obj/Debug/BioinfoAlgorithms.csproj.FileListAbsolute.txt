@@ -10,3 +10,7 @@ C:\Users\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\obj\D
 C:\Users\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\bin\Debug\BioinfoAlgorithms.exe
 C:\Users\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\bin\Debug\BioinfoAlgorithms.pdb
 C:\Users\smanakov\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\obj\Debug\BioinfoAlgorithms.csprojResolveAssemblyReference.cache
+C:\Users\smanakov.ILLUMINA\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\bin\Debug\BioinfoAlgorithms.exe.config
+C:\Users\smanakov.ILLUMINA\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\obj\Debug\BioinfoAlgorithms.exe
+C:\Users\smanakov.ILLUMINA\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\obj\Debug\BioinfoAlgorithms.pdb
+C:\Users\smanakov.ILLUMINA\Git\BOOK_BIOINFO_ALG\BioinfoAlgorithms\BioinfoAlgorithms\obj\Debug\BioinfoAlgorithms.csprojResolveAssemblyReference.cache
